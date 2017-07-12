@@ -1,5 +1,17 @@
+body {
+  background-color: #333;
+}
+
 #map {
   height: 75%;
   width: 75%;
   margin: auto;
+}
+
+.banner {
+  padding: .75rem;
+  padding-bottom: .5;
+  color: #5CB85C;
+  background-color: #000;
+  margin-bottom: 4%;
 }
