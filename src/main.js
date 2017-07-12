@@ -1,5 +1,5 @@
 var Map = require('./components/map');
-//var testData = require('../test_resources/sample').data;
+var dataUtil = require('../test_resources/sample');
 
 //Initialize map
 var map = new Map({
@@ -8,12 +8,12 @@ var map = new Map({
   zoom: 13
 });
 
-var getPromise = $.ajax({
-	'method': 'GET',
-	'url': '/mapData'
-});
+// var getPromise = $.ajax({
+// 	'method': 'GET',
+// 	'url': '/mapData'
+// });
 
-getPromise
+dataUtil.getData()
 .done(function(data, textStatus, jqXHR)  {
 	//Map data - testData should be replaced with real data
 	map.mapData(data.data);
