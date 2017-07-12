@@ -1,5 +1,6 @@
 module.exports = {
   entry: './src/main',
+  devtool: 'source-map',
   output: {
     path: './build',
     filename: 'main.js'
