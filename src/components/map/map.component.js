@@ -1,9 +1,11 @@
 const contentString = "<span class='content-string'>The speed on this segment is: </span>";
+var me;
 
 function Map(config){
   //initialize map
   console.log('Map Init');
-  this._map = new google.maps.Map(document.getElementById(config.id),{
+  me = this;
+  me._map = new google.maps.Map(document.getElementById(config.id),{
     center: config.center,
     zoom: config.zoom
   });
@@ -31,7 +33,7 @@ Map.prototype.mapData = function(data){
     });
 
     //Draw line on map
-    line.setMap(this._map);
+    line.setMap(me._map);
     //Listener for clicks to show speed
     google.maps.event.addListener(line, 'click', function(event) {
       showPolyLineTag(event, this);
@@ -58,22 +60,22 @@ function getStrokeColor(speed){
 
 function showPolyLineTag(event, polyLine){
   //Close any open info window
-  if(this._infoWindow){
-    this._infoWindow.close();
+  if(me._infoWindow){
+    me._infoWindow.close();
   }
 
   //Create new info window with content string
   //Speed -1 = data unavailable
-  this._infoWindow = infoWindow = new google.maps.InfoWindow({
+  me._infoWindow = new google.maps.InfoWindow({
     content: contentString + 
       (polyLine.speed !=='-1' ? polyLine.speed : ' unavailable at this time') 
   });
 
   //Set info window to positionof the click and open
-  this._infoWindow.setPosition(
+  me._infoWindow.setPosition(
     {lat: event.latLng.lat(), lng: event.latLng.lng()}
   );
-  this._infoWindow.open(map,polyLine);
+  me._infoWindow.open(map,polyLine);
 }
 
 module.exports = Map;
