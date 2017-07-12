@@ -11,9 +11,21 @@ function Map(config){
   });
 }
 
+Map.prototype.removeLines = function(data,cb){
+  if(me._lines && me._lines.length > 0){
+    for(var line of me._lines){
+      line.setMap(null);
+    }
+  }
+  setTimeout(function(){
+    cb(data);
+  },500);
+};
+
 Map.prototype.mapData = function(data){
-  //map all traffic data in polyLines
   console.log('Mapping data');
+  //map all traffic data in polyLines
+  me._lines = [];
   for(var item of data){
     //fetch coordinates
     let coords = [
@@ -34,6 +46,7 @@ Map.prototype.mapData = function(data){
 
     //Draw line on map
     line.setMap(me._map);
+    me._lines.push(line);
     //Listener for clicks to show speed
     google.maps.event.addListener(line, 'click', function(event) {
       showPolyLineTag(event, this);
