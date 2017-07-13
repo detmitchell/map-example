@@ -32,7 +32,7 @@ app.get('/mapData', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../' + req.path));
+    res.sendFile(path.join(__dirname, `../${req.path}`));
 });
 
 app.listen(port, (err) => {
