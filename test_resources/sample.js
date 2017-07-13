@@ -1,6 +1,6 @@
 var $ = require('jquery');
 
-module.exports.getData = function(){
+export function getData(){
 	return $.ajax({
 		'method': 'GET',
 		'url': '/mapData'

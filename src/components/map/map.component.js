@@ -1,94 +1,96 @@
 const contentString = "<span class='content-string'>The speed on this segment is: </span>";
-var me;
 
-function Map(config){
+export default class Map {
   //initialize map
-  console.log('Map Init');
-  me = this;
-  me._map = new google.maps.Map(document.getElementById(config.id),{
-    center: config.center,
-    zoom: config.zoom
-  });
-}
+  constructor(config) {
+    console.log('Map Init');
+    this._map = new google.maps.Map(document.getElementById(config.id),{
+      center: config.center,
+      zoom: config.zoom
+    });
+  }
 
-Map.prototype.removeLines = function(data,cb){
-  if(me._lines && me._lines.length > 0){
-    for(var line of me._lines){
-      line.setMap(null);
+  removeLines = (data,cb) => {
+    if(this._lines && this._lines.length > 0){
+      for(let line of this._lines){
+        line.setMap(null);
+      }
     }
+    setTimeout(() => {
+      cb(data);
+    },500);
+  };
+
+  mapData = (data) => {
+    console.log('Mapping data');
+    //map all traffic data in polyLines
+    this._lines = [];
+    for(let item of data){
+      //fetch coordinates
+      let coords = [
+        {lat: Number(item._lif_lat), lng: Number(item.start_lon)},
+        {lat: Number(item._lit_lat), lng: Number(item._lit_lon)}
+      ];
+
+      //create New line
+      let line = new google.maps.Polyline({
+        path: coords,
+        geodesic: false,
+        strokeColor: this.getStrokeColor(item._traffic),
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        clickability: true,
+        speed: item._traffic //add speed property
+      });
+
+      //Draw line on map
+      line.setMap(this._map);
+      this._lines.push(line);
+      //Listener for clicks to show speed
+      google.maps.event.addListener(line, 'click', (event) => {
+        this.showPolyLineTag(event, line);
+      });
+    }
+  };
+
+  getStrokeColor = (speed) => {
+    //fetch speed gradiant
+    //returns the first true case condition
+    switch(true) {
+      case speed<0 :
+        return 'grey';
+      
+      case speed<15 :
+        return 'red';
+      
+      case speed<20 :
+        return '#fc6a1b';
+      
+      case speed<35 :
+        return 'green';
+      
+      default :
+        return 'blue';
+    } 
   }
-  setTimeout(function(){
-    cb(data);
-  },500);
-};
 
-Map.prototype.mapData = function(data){
-  console.log('Mapping data');
-  //map all traffic data in polyLines
-  me._lines = [];
-  for(var item of data){
-    //fetch coordinates
-    let coords = [
-      {lat: Number(item._lif_lat), lng: Number(item.start_lon)},
-      {lat: Number(item._lit_lat), lng: Number(item._lit_lon)}
-    ];
+  showPolyLineTag = (event, polyLine) => {
+    //Close any open info window
+    if(this._infoWindow){
+      this._infoWindow.close();
+    }
 
-    //create New line
-    let line = new google.maps.Polyline({
-      path: coords,
-      geodesic: false,
-      strokeColor: getStrokeColor(item._traffic),
-      strokeOpacity: 1.0,
-      strokeWeight: 2,
-      clickability: true,
-      speed: item._traffic //add speed property
+    //Create new info window with content string
+    //Speed -1 = data unavailable
+    this._infoWindow = new google.maps.InfoWindow({
+      content: contentString + 
+        (polyLine.speed !=='-1' ? polyLine.speed : ' unavailable at this time') 
     });
 
-    //Draw line on map
-    line.setMap(me._map);
-    me._lines.push(line);
-    //Listener for clicks to show speed
-    google.maps.event.addListener(line, 'click', function(event) {
-      showPolyLineTag(event, this);
-    });
+    //Set info window to positionof the click and open
+    this._infoWindow.setPosition(
+      {lat: event.latLng.lat(), lng: event.latLng.lng()}
+    );
+    this._infoWindow.open(map,polyLine);
   }
-};
-
-function getStrokeColor(speed){
-  //fetch speed gradiant
-  if(speed<0){
-    return 'grey';
-  } 
-  if(speed<15){
-    return 'red';
-  }
-  if(speed<20){
-    return '#fc6a1b';
-  }
-  if(speed<35){
-    return 'green';
-  }
-  return 'blue';
 }
-
-function showPolyLineTag(event, polyLine){
-  //Close any open info window
-  if(me._infoWindow){
-    me._infoWindow.close();
-  }
-
-  //Create new info window with content string
-  //Speed -1 = data unavailable
-  me._infoWindow = new google.maps.InfoWindow({
-    content: contentString + 
-      (polyLine.speed !=='-1' ? polyLine.speed : ' unavailable at this time') 
-  });
-
-  //Set info window to positionof the click and open
-  me._infoWindow.setPosition(
-    {lat: event.latLng.lat(), lng: event.latLng.lng()}
-  );
-  me._infoWindow.open(map,polyLine);
-}
-
-module.exports = Map;
