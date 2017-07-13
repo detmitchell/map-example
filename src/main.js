@@ -11,7 +11,7 @@ let map = new Map({
 function fetchMapData(){
 	getData()
 		.done(function(resp,textStatus, jqXHR){
-			map.removeLines(resp.data, map.mapData);
+			map.mapData(resp.data);
 		})
 		.fail(function(err){
 			console.log(err);
@@ -21,4 +21,4 @@ function fetchMapData(){
 fetchMapData();
 setInterval(function(){
 	fetchMapData();
-},30*1000);
+},15*60*1000);

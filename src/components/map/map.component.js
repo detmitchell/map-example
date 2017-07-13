@@ -10,18 +10,10 @@ export default class Map {
     });
   }
 
-  removeLines = (data,cb) => {
+  mapData = async (data) => {
     if(this._lines && this._lines.length > 0){
-      for(let line of this._lines){
-        line.setMap(null);
-      }
+      await this.removeLines(this._lines);
     }
-    setTimeout(() => {
-      cb(data);
-    },500);
-  };
-
-  mapData = (data) => {
     console.log('Mapping data');
     //map all traffic data in polyLines
     this._lines = [];
@@ -72,7 +64,18 @@ export default class Map {
       default :
         return 'blue';
     } 
-  }
+  };
+
+  removeLines = (lines) => {
+    return new Promise(resolve => {
+      lines.forEach((line)=>{
+        line.setMap(null);
+      });
+      setTimeout(function(){
+        resolve();
+      },50);
+    });
+  };
 
   showPolyLineTag = (event, polyLine) => {
     //Close any open info window

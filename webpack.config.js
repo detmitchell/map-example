@@ -1,5 +1,5 @@
 module.exports = {
-  entry: './src/main',
+  entry: ['babel-polyfill','./src/main'],
   devtool: 'source-map',
   output: {
     path: './build',
