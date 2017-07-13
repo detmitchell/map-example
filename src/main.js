@@ -1,5 +1,6 @@
 import Map from './components/map/map.component';
 import { getData } from '../test_resources/sample';
+import { getDirectData } from '../test_resources/sample';
 
 //Initialize map
 let map = new Map({
@@ -9,9 +10,9 @@ let map = new Map({
 });
 
 function fetchMapData(){
-	getData()
+	getDirectData() //getData()
 		.done(function(resp,textStatus, jqXHR){
-			map.mapData(resp.data);
+			map.mapData(resp);
 		})
 		.fail(function(err){
 			console.log(err);
@@ -21,4 +22,4 @@ function fetchMapData(){
 fetchMapData();
 setInterval(function(){
 	fetchMapData();
-},15*60*1000);
+},60*1000);
